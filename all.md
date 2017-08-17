@@ -1,0 +1,117 @@
+%Swift iOS开发小书
+%刘传君
+
+# 前言
+
+在使用Swift语言进行App还是有些美好感受的。比如Swift的对象字面量可以很好的表达复杂数据结构，就像使用脚本一样。再比如使用UIKit可以很容易做出快速用户响应的界面。
+
+然而，作为一个程序员，我对Xcode的StoryBoard并不接受，即使官方文档和很多同行都推荐使用它，因为：
+
+1. 它显著提高了我的学习成本，因为采用StoryBoard构建界面而编写的教程常常充斥着长篇的操作流程。
+2. App的一些技术细节，分散在代码和Storyboard中，阅读这样的Xcode工程常常是恼人的。
+
+不仅仅我这么想，我在Stackoverflow.com上，常常发现有些人会在提问中加上一个programmatically，表示一点点的对Storyboard的抗议和对基于纯代码的回答的期望。
+
+所以，我的这本书内，所以和UIKit相关的示例都会尽可能的使用代码，而根本不会使用Storyboard的。
+
+作为读者，这样的主张下著述的资料对你是有好处的：
+
+1. 你可以最小步骤的把本书的代码跑起来。拿到本身的代码，你常常需要做的就是：使用Xcode创建一个Single View App，然后把代码贴到AppDelegate.swift文件内，然后Run就是了
+2. 你不必看和Storyboard相关的啰嗦的操作步骤，然后费力的在IDE内寻找对应的菜单、按钮，并且执行拖放等类似操作员的工作
+3. 因为无需截图、也基本不太需要操作步骤，因此文章篇幅会缩小，这样可以降低你的阅读压力
+
+我建议你，在阅读对应章节时，首先把代码跑起来。这是重要一步，说明我的代码是正确的。然后才去看代码，如果代码看得懂，后面的文字就不必看了。
+
+因为官方主张使用Storyboard，所以我的想法和官方是背道而驰的，因此做起来其实颇有难度。第一次尝试是在2016年1月时，但是几个月后就不得不放弃。等到快一年了再重回此主题，我发现如有神助，因此发奋写作完成本书并分享给你。
+
+
+
+刘传君 
+2017年03月17日 
+
+## 工具和环境
+
+- 本书采用的代码使用的是Swift 3.0，在集成开发工具Xcode 8.2.1内编译通过
+- HTTP访问相关章节使用了httpbin服务，一个用于测试访问http服务的网站，地址为:https://httpbin.org/ ，此网站首页有使用帮助
+- 另外也采用了node.js编写一些http服务器用于测试，我使用的node.js版本为5.0，官方网站为https://nodejs.org/en/
+- 为了测试HTTP服务，也使用了curl命令，它可以用来发起客户端HTTP请求。官方网站为https://curl.haxx.se/
+
+## 献给
+
+三月里在三圣乡盛放的那朵小花儿
+
+## 作者
+
+刘传君。创建过产品，创过业。好读书，求甚解。可以通过1000copy#gmail.com联系到我
+
+## 出品
+
+Vue.js小书 http://www.ituring.com.cn/book/1956
+
+# 最小的App
+
+纯粹使用代码（而不需要Storyboard）来创建一个iOS App是可行的。
+
+首先做些操作性的工作：
+
+1. 打开Xcode
+2. 创建一个Single View App。安装工程向导的要求一步步的做完，其中需要特别留意的是，选择Swift语言
+
+Xcode会进入主要编辑界面。随即打开AppDelegate.swift文件，覆盖原来的源代码为如下代码：
+
+    import UIKit
+    @UIApplicationMain
+    class AppDelegate: UIResponder, UIApplicationDelegate {
+        var window : UIWindow?
+        func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+            window = UIWindow()
+            window!.rootViewController = UIViewController()
+            window!.rootViewController!.view.backgroundColor = .blue
+            window!.makeKeyAndVisible()
+            return true
+        }
+    }
+
+运行后发现手机（或者仿真器）满屏的蓝色背景就说明成功了。
+
+##分析
+
+尽管程序代码并不长，但是知识点还是比较多的。一起来看看代码。
+
+我们需要导入UIKit：
+    
+    import UIKit
+
+UIKit是一个框架，用来构建用户界面、响应用户交互和系统事件。制作一个App，引入UIKit常常是第一件工作。
+
+
+接下来要看的是@UIApplicationMain。它是一个属性标记，它的存在指明接下来的类是整个App的入口类，代码将会首先从此类开始执行。标记了@UIApplicationMain的类，应该实现协议UIApplicationDelegate。
+
+接着查看AppDelegate类。它实现协议UIApplicationDelegate。这意味着AppDelegate应该实现协议UIApplicationDelegate期望的数据对象：
+
+    optional public var window: UIWindow? { get set }
+
+也应该实现了此协议中期望的函数：
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool 
+
+这样此函数就被设置为App的程序入口点了。UIKit就会在完成App启动调用此函数，App可以在此实现自己的初始化逻辑。
+
+在本案例中的自定义初始化逻辑是:
+
+1. 创建UIWindow实例并把它赋给window成员。
+2. 创建UIViewController的实例，并把它赋给window.rootViewController成员
+3. 为了可视化的看到我们的工作成果，我们设置UIViewController.view的背景色为蓝色
+
+这样，我们完成了最基本的一个UI界面。
+
+UIWindow代表一个Window,通常在一个App中至少会有Window，它构成了整个App的用户界面的容器。Window并没有任何外观形象，实际的可见界面由其内的View来展示。
+
+UIView代表一个View，它们是构建界面的基本构造块，它定义了一个屏幕上的矩形区域，并且管理此区域的内容和用户交互。Window通过属性rootViewController.View开始关联根视图，根视图和其子视图，以及子视图的子视图一起构成层次化的视图树。UIView的使用是非常广泛的,实际上按钮（UIButton）、标签（UILabel）等控件都是视图的子类。
+
+类AppDelegate的名字中的Delegate常常引人好奇。Delegate是一种简单而强大的设计模式，可以让其中一个对象遵照指定的协议委托一部分功能给另外一个对象。在此案例中，关于委托牵涉到了两个类包括UIApplication、AppDelegate，以及一个协议为UIApplicationDelegate，UIApplication委托事件遵照协议UIApplicationDelegate，委托事件给AppDelegate。这里的委托事件体现为此函数：
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
+
+当App启动完成后，UIApplication会调用此函数以便开发者可以完成自己的启动业务逻辑。协议UIApplicationDelegate还有更多可以实现的事件函数，可以通过官方手册了解它的更多资料。
+

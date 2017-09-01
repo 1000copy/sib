@@ -1,3 +1,6 @@
+
+## 框架：图片缓存
+
 每次加载WebView内容，如果图片可以缓存的话，速度就会非常快。默认情况下，WebView自己来加载图片，缓存的策略也是自己定的。如想要自己缓存的话，那么可以使用URLSessionDataDelegate来截获HTTP访问，如果访问的是图片的话，就自己去发起请求，缓存，如果缓存了的话，就提取缓存，自己构建一个HTTP响应对象返回。
 
 如下案例，使用了Kingfisher库做实际的图片缓存，从而隔离开和文件操作相关的细节。代码来自: https://github.com/Finb/V2ex-Swift/blob/master/Common/WebViewImageProtocol.swift 。可以使用，但是代码有些破碎，晚点有时间才调整。

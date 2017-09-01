@@ -1,3 +1,6 @@
+
+# 常见的delegate错误
+
 在解决一个遗产代码的过程中，我希望对UIAlertView稍作封装，以便从巨大的ViewController内分离出特定的AlertView的代码，我这样做的：
 
     import UIKit
